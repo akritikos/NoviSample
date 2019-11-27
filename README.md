@@ -15,9 +15,8 @@ Although we could use RestSharp, Refit or another of advanced libraries for rest
 
 ### Persistence
 
-Implemented as a seperate project to hold migrations indepenently of the API. To avoid needless complication we reuse the [model][modelDefinition] we defined in the library as a table definition by adding a [few more fields][modelModification].
+Implemented as a seperate project to hold migrations indepenently of the API. To avoid needless complication we reuse the [model][modelDefinition] we defined in the library as a table definition by adding a few more fields as seen in 5c0a35b773d93d11453034d22b4ae589fbf02293
 
 [assigment]: assigment.pdf
 [httpClient]: https://aspnetmonsters.com/2016/08/2016-08-27-httpclientwrong/
 [modelDefinition]: src/NoviSample.Services/Models/IpDetailResponse.cs
-[modelModification]: 5c0a35b773d93d11453034d22b4ae589fbf02293
