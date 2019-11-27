@@ -21,6 +21,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoviSample.Services", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NoviSample.Debugger", "tests\NoviSample.Debugger\NoviSample.Debugger.csproj", "{66770D83-BC47-4AAB-9608-D2CF37F8A463}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoviSample.Api", "src\NoviSample.Api\NoviSample.Api.csproj", "{5B324710-8C46-4D2C-B779-CA4E558A7500}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoviSample.Persistence", "src\NoviSample.Persistence\NoviSample.Persistence.csproj", "{E636B845-989D-4ADA-AFAD-6E2C03E86ACF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +39,14 @@ Global
 		{66770D83-BC47-4AAB-9608-D2CF37F8A463}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66770D83-BC47-4AAB-9608-D2CF37F8A463}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66770D83-BC47-4AAB-9608-D2CF37F8A463}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B324710-8C46-4D2C-B779-CA4E558A7500}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B324710-8C46-4D2C-B779-CA4E558A7500}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B324710-8C46-4D2C-B779-CA4E558A7500}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B324710-8C46-4D2C-B779-CA4E558A7500}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E636B845-989D-4ADA-AFAD-6E2C03E86ACF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E636B845-989D-4ADA-AFAD-6E2C03E86ACF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E636B845-989D-4ADA-AFAD-6E2C03E86ACF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E636B845-989D-4ADA-AFAD-6E2C03E86ACF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -42,6 +54,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{907F9B88-03F2-40B5-8801-D69E5E967288} = {D1CDEDEB-D01E-4DFC-A89F-4A38F8A32521}
 		{66770D83-BC47-4AAB-9608-D2CF37F8A463} = {D00B7286-E855-4EBB-8201-E9F375872B9C}
+		{5B324710-8C46-4D2C-B779-CA4E558A7500} = {D1CDEDEB-D01E-4DFC-A89F-4A38F8A32521}
+		{E636B845-989D-4ADA-AFAD-6E2C03E86ACF} = {D1CDEDEB-D01E-4DFC-A89F-4A38F8A32521}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B3E4454F-5B25-4BC5-9488-0C4E860382D1}
