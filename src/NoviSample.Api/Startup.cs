@@ -44,7 +44,7 @@ namespace Kritikos.NoviSample.Api
 		{
 			services.AddDbContext<NovibetDbContext>(o =>
 			{
-				o.UseSqlServer(Configuration.GetConnectionString("Envity"), options => options.EnableRetryOnFailure())
+				o.UseSqlServer(Configuration.GetConnectionString("Novibet"), options => options.EnableRetryOnFailure())
 					.EnableSensitiveDataLogging(Environment.IsDevelopment())
 					.ConfigureWarnings(warnings =>
 					{

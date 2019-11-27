@@ -7,6 +7,7 @@ namespace NoviSample.Api
 	using Kritikos.NoviSample.Api.Helpers;
 
 	using Microsoft.AspNetCore.Hosting;
+	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.Hosting;
 	using Microsoft.Extensions.Logging;
 
@@ -55,6 +56,8 @@ namespace NoviSample.Api
 				{
 					webBuilder.UseStartup<Startup>();
 				})
+				.ConfigureAppConfiguration(options => options
+					.AddJsonFile("connectionStrings.json", true, true))
 				.ConfigureLogging(log =>
 				{
 					log.ClearProviders();
