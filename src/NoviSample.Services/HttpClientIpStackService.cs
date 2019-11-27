@@ -42,6 +42,7 @@ namespace Kritikos.NoviSample.Services
 			// Bad Practice, but our interface demands IPDetails, not Task<IPDetails> so we can't go async
 			var result = Task.Run(() => Client.GetStringAsync($"{ip}?access_key={apikey}")).GetAwaiter().GetResult();
 			var details = JsonConvert.DeserializeObject<IpDetailResponse>(result);
+			details.Ip = ip;
 			return details;
 		}
 
@@ -49,6 +50,7 @@ namespace Kritikos.NoviSample.Services
 		{
 			var result = await Client.GetStringAsync($"{ip}?access_key={apikey}");
 			var details = JsonConvert.DeserializeObject<IpDetailResponse>(result);
+			details.Ip = ip;
 			return details;
 		}
 	}
