@@ -1,13 +1,17 @@
 namespace NoviSample.Api
 {
 	using System;
+	using System.Linq;
 	using System.Reflection;
 
 	using Kritikos.NoviSample.Api;
 	using Kritikos.NoviSample.Api.Helpers;
+	using Kritikos.NoviSample.Persistence;
 
 	using Microsoft.AspNetCore.Hosting;
+	using Microsoft.EntityFrameworkCore;
 	using Microsoft.Extensions.Configuration;
+	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.Extensions.Hosting;
 	using Microsoft.Extensions.Logging;
 
@@ -26,7 +30,7 @@ namespace NoviSample.Api
 	public static class Program
 	{
 		private const string NoisyLogs =
-			"SourceContext='Microsoft.Hosting.Lifetime' or SourceContext='Microsoft.EntityFrameworkCore.Database.Command' or SourceContext='Serilog.AspNetCore.RequestLoggingMiddleware'";
+			"SourceContext='Microsoft.Hosting.Lifetime' or SourceContext='Serilog.AspNetCore.RequestLoggingMiddleware'";
 
 		public static void Main(string[] args)
 		{
@@ -36,6 +40,8 @@ namespace NoviSample.Api
 			try
 			{
 				var host = CreateHostBuilder(args).Build();
+				host.MigrateDatabase();
+
 				host.Run();
 			}
 #pragma warning disable CA1031 // Final frontier, catching generic type exception to log it and preserve the stack trace
@@ -47,6 +53,23 @@ namespace NoviSample.Api
 			finally
 			{
 				Log.CloseAndFlush();
+			}
+		}
+
+		private static void MigrateDatabase(this IHost host)
+		{
+			using var scope = host.Services.CreateScope();
+
+			var services = scope.ServiceProvider;
+			var context = services.GetRequiredService<NovibetDbContext>();
+			var migrations = context.Database.GetPendingMigrations().ToList();
+
+			if (migrations.Any())
+			{
+				context.Database.Migrate();
+				Log.Information(
+					LogMessages.MigrationsApplied,
+					migrations.ToList());
 			}
 		}
 
