@@ -3,6 +3,7 @@ namespace NoviSample.Api
 	using System;
 	using System.Reflection;
 
+	using Kritikos.NoviSample.Api;
 	using Kritikos.NoviSample.Api.Helpers;
 
 	using Microsoft.AspNetCore.Hosting;
@@ -15,10 +16,17 @@ namespace NoviSample.Api
 	using Serilog.Exceptions.Core;
 	using Serilog.Exceptions.Destructurers;
 	using Serilog.Exceptions.SqlServer.Destructurers;
+	using Serilog.Filters;
+	using Serilog.Formatting;
+	using Serilog.Formatting.Compact;
+	using Serilog.Formatting.Json;
 	using Serilog.Sinks.SystemConsole.Themes;
 
 	public static class Program
 	{
+		private const string NoisyLogs =
+			"SourceContext='Microsoft.Hosting.Lifetime' or SourceContext='Microsoft.EntityFrameworkCore.Database.Command' or SourceContext='Serilog.AspNetCore.RequestLoggingMiddleware'";
+
 		public static void Main(string[] args)
 		{
 			Log.Logger = BasicLogger()
@@ -34,6 +42,10 @@ namespace NoviSample.Api
 #pragma warning restore CA1031 // Do not catch general exception types
 			{
 				Log.Fatal(e, LogMessages.UnhandledException, e.Message);
+			}
+			finally
+			{
+				Log.CloseAndFlush();
 			}
 		}
 
@@ -52,6 +64,10 @@ namespace NoviSample.Api
 
 		private static LoggerConfiguration BasicLogger()
 			=> new LoggerConfiguration()
+				.MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+				.MinimumLevel.Override("Microsoft.EntityFrameworkCore.Database.Command", LogEventLevel.Information)
+				.MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+				.MinimumLevel.Override("System", LogEventLevel.Error)
 				.Enrich.WithProperty("Application", Assembly.GetExecutingAssembly().GetName().Name)
 				.Enrich.FromLogContext()
 				.Enrich.WithExceptionDetails(new DestructuringOptionsBuilder()
@@ -61,7 +77,10 @@ namespace NoviSample.Api
 						new DbUpdateExceptionDestructurer(), new SqlExceptionDestructurer(),
 					})
 					.WithRootName("Exception"))
-				.WriteTo.Console(theme: AnsiConsoleTheme.Code, restrictedToMinimumLevel: LogEventLevel.Information)
-				.WriteTo.Debug();
+				.WriteTo.Debug()
+				.WriteTo.Logger(c => c
+					.MinimumLevel.Debug()
+					.Filter.ByExcluding(NoisyLogs)
+					.WriteTo.Console());
 	}
 }

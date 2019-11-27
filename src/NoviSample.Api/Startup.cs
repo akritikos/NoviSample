@@ -1,4 +1,4 @@
-namespace NoviSample.Api
+namespace Kritikos.NoviSample.Api
 {
 	using System;
 	using System.IO;
@@ -42,8 +42,6 @@ namespace NoviSample.Api
 
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddLogging();
-
 			services.AddDbContext<NovibetDbContext>(o =>
 			{
 				o.UseSqlServer(Configuration.GetConnectionString("Envity"), options => options.EnableRetryOnFailure())
@@ -72,10 +70,8 @@ namespace NoviSample.Api
 				.SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 		}
 
-		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
-			loggerFactory.AddSerilog();
-
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
