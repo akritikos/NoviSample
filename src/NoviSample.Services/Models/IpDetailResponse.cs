@@ -22,8 +22,8 @@ namespace Kritikos.NoviSample.Services.Models
 		[JsonProperty(PropertyName = "continent_name")]
 		public string Continent { get; set; } = string.Empty;
 
-		public double Latitude { get; set; }
+		public double Latitude { get; set; } = double.NaN;
 
-		public double Longitude { get; set; }
+		public double Longitude { get; set; } = double.NaN;
 	}
 }

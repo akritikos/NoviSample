@@ -15,6 +15,9 @@ namespace Kritikos.NoviSample.Services
 		private const string BaseUri = "api.ipstack.com";
 		private static readonly HttpClient Client = new HttpClient();
 
+		private static readonly JsonSerializerSettings SerializerSettings =
+			new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
+
 		// Should be secure string in untrusted environments
 		// showcasing normal string for simplicity
 		private readonly string apikey;
@@ -42,14 +45,14 @@ namespace Kritikos.NoviSample.Services
 		{
 			// Bad Practice, but our interface demands IPDetails, not Task<IPDetails> so we can't go async
 			var result = Task.Run(() => Client.GetStringAsync($"{ip}?access_key={apikey}")).GetAwaiter().GetResult();
-			var details = JsonConvert.DeserializeObject<IpDetailResponse>(result);
+			var details = JsonConvert.DeserializeObject<IpDetailResponse>(result, SerializerSettings);
 			return details;
 		}
 
 		public async Task<IpDetailResponse> GetDetailsAsync(string ip)
 		{
 			var result = await Client.GetStringAsync($"{ip}?access_key={apikey}");
-			var details = JsonConvert.DeserializeObject<IpDetailResponse>(result);
+			var details = JsonConvert.DeserializeObject<IpDetailResponse>(result, SerializerSettings);
 			return details;
 		}
 
@@ -57,7 +60,7 @@ namespace Kritikos.NoviSample.Services
 		public async Task<List<IpDetailResponse>> GetBulkDetailsAsync(string[] ipList)
 		{
 			var result = await Client.GetStringAsync($"{string.Join(",", ipList)}?access_key={apikey}");
-			var details = JsonConvert.DeserializeObject<List<IpDetailResponse>>(result);
+			var details = JsonConvert.DeserializeObject<List<IpDetailResponse>>(result, SerializerSettings);
 			return details;
 		}
 	}
