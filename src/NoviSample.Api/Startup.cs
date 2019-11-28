@@ -4,10 +4,12 @@ namespace Kritikos.NoviSample.Api
 	using System.IO;
 	using System.Reflection;
 	using System.Runtime.Caching;
+
 	using Kritikos.NoviSample.HostedServices;
 	using Kritikos.NoviSample.Persistence;
 	using Kritikos.NoviSample.Services;
 	using Kritikos.NoviSample.Services.Contracts;
+
 	using Microsoft.AspNetCore.Builder;
 	using Microsoft.AspNetCore.Hosting;
 	using Microsoft.AspNetCore.Http;

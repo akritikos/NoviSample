@@ -13,6 +13,8 @@ Although we could use RestSharp, Refit or another of advanced libraries for rest
 
 An extra interface is provided, ```IpInfoProviderAsync``` to avoid repeated Task.Result calls. Sample console app uses the provided interface, API will use the async method.
 
+Additionally, we shall be using the concrete implementation of IpDetails since we need access to the IP address and don't want to change the specifications of a public interface.
+
 ## API
 
 ### Persistence
