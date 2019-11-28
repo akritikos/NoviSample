@@ -11,11 +11,13 @@ Sample assigment for assessment, described in detail [here][assigment],
 Given the ambiguous interface we're given, we assume Country/Continent are their equivalent names instead of two char codes.
 Although we could use RestSharp, Refit or another of advanced libraries for rest calls, the example is simple enough that a simple http client is enough. As for why we are using a static field for HttpClient instead of spinning up new instances as required cf. [You're using HttpClient wrong and it is destabilizing your software][httpClient]. Also, the methods used by our implementation are marked as thread-safe by Microsoft.
 
+An extra interface is provided, ```IpInfoProviderAsync``` to avoid repeated Task.Result calls. Sample console app uses the provided interface, API will use the async method.
+
 ## API
 
 ### Persistence
 
-Implemented as a seperate project to hold migrations indepenently of the API. To avoid needless complication we reuse the [model][modelDefinition] we defined in the library as a table definition by adding a few more fields (Id to be used as a primary key, RowVersion to be used for concurrency). In a real world scenario we would have gone with different models to provide extensibility and use some sort of mapping between models (cf. method ```ToIpDetailResponse``` in [IpController][ipController]).
+Implemented as a seperate project to hold migrations indepenently of the API.
 
 ### Web Service
 
