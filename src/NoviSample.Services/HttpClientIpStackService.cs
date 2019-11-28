@@ -68,6 +68,11 @@ namespace Kritikos.NoviSample.Services
 		// Poor man's batching...
 		public async Task<List<IpDetailResponse>> GetBulkDetailsAsync(string[] ipList)
 		{
+			if (ipList == null)
+			{
+				throw new ArgumentNullException(nameof(ipList));
+			}
+
 			var result = new List<IpDetailResponse>();
 			foreach (var address in ipList)
 			{

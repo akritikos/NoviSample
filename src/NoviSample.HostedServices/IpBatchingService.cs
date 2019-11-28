@@ -18,7 +18,7 @@ namespace Kritikos.NoviSample.HostedServices
 
 	public class IpBatchingService : BackgroundService
 	{
-		private IServiceScope scope;
+		private readonly IServiceScope scope;
 
 		public IpBatchingService(
 			IInMemoryBackgroundIpQueue queue,
@@ -27,6 +27,11 @@ namespace Kritikos.NoviSample.HostedServices
 			MemoryCache cache,
 			IServiceScopeFactory scopeFactory)
 		{
+			if (scopeFactory == null)
+			{
+				throw new ArgumentNullException(nameof(scopeFactory));
+			}
+
 			Queue = queue;
 			Logger = logger;
 			IpInfoProvider = ipInfoProvider;
@@ -46,9 +51,7 @@ namespace Kritikos.NoviSample.HostedServices
 		private MemoryCache Cache { get; }
 
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-		{
-			await Execute(stoppingToken);
-		}
+			=> await Execute(stoppingToken);
 
 		private async Task Execute(CancellationToken stoppingToken = default)
 		{

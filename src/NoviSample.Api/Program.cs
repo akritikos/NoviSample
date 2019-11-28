@@ -56,8 +56,12 @@ namespace NoviSample.Api
 				{
 					webBuilder.UseStartup<Startup>();
 				})
-				.ConfigureAppConfiguration(options => options
-					.AddJsonFile("connectionStrings.json", true, true))
+				.ConfigureAppConfiguration((context, options) => options
+					.SetBasePath(context.HostingEnvironment.ContentRootPath)
+					.AddJsonFile("appsettings.json", false, true)
+					.AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", true, true)
+					.AddJsonFile("connectionStrings.json", true, true)
+					.AddEnvironmentVariables())
 				.ConfigureLogging(log =>
 				{
 					log.ClearProviders();
