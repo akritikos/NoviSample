@@ -1,6 +1,7 @@
 namespace Kritikos.NoviSample.HostedServices
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Linq;
 	using System.Runtime.Caching;
 	using System.Threading;
@@ -10,6 +11,7 @@ namespace Kritikos.NoviSample.HostedServices
 	using Kritikos.NoviSample.Persistence;
 	using Kritikos.NoviSample.Services.Contracts;
 
+	using Microsoft.EntityFrameworkCore;
 	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.Extensions.Hosting;
 	using Microsoft.Extensions.Logging;
@@ -61,6 +63,8 @@ namespace Kritikos.NoviSample.HostedServices
 					continue;
 				}
 
+				var guids = item.Select(x => x.Identifier).GroupBy(x => x).Select(x => x.Key).ToList();
+				Logger.LogInformation("Processing {Count} ip addresses from batches {@Batches}", item.Count, guids);
 				var results = await IpInfoProvider.GetBulkDetailsAsync(item.Select(x => x.address).ToArray());
 				var response = results.Select(x => (
 						identifier: item.Single(y => y.address == x.Ip).Identifier,
@@ -68,7 +72,10 @@ namespace Kritikos.NoviSample.HostedServices
 					.ToList();
 				var ips = response.Select(x => x.response.Ip).ToList();
 
-				var existing = Context.IpDetails.Where(x => ips.Contains(x.Ip)).ToList();
+				var existing = Context.IpDetails
+					.TagWith("Fetching details for batch job refresh")
+					.Where(x => ips.Contains(x.Ip))
+					.ToList();
 				var remaining = response.Where(x => !existing.Select(y => y.Ip == x.response.Ip).Any())
 					.Select(x => x.response)
 					.Select(x => new IpDetails
@@ -98,7 +105,7 @@ namespace Kritikos.NoviSample.HostedServices
 					.ToList()
 					.ForEach(x => Cache.Set(x.Ip, x, DateTime.UtcNow.AddMinutes(1)));
 				Queue.MarkCompleted(response);
-				
+
 				// Simulates long duration calls
 				Thread.Sleep(5000);
 			}

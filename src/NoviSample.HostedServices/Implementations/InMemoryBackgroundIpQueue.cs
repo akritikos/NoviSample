@@ -59,16 +59,16 @@ namespace Kritikos.NoviSample.HostedServices.Implementations
 			}
 		}
 
-		public (int remaining, int done) GetProgressOfBatch(string identifier)
+		public (int? remaining, int? done) GetProgressOfBatch(string identifier)
 		{
-			var remaining = QueuedItems[identifier]?.Count;
-			if (remaining == null)
-			{
-				return "NOJOB";
-			}
-			var done = CompletedItems[identifier]?.Count;
+			var remaining = QueuedItems.ContainsKey(identifier)
+				? QueuedItems[identifier]
+				: null;
+			var done = CompletedItems.ContainsKey(identifier)
+				? CompletedItems[identifier]
+				: null;
 
-			return $"{done}/{remaining + done}";
+			return (remaining?.Count, done?.Count);
 		}
 	}
 }

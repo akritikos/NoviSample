@@ -138,7 +138,7 @@ namespace Kritikos.NoviSample.Api.Controller
 				return NotFound("No such job, are you sure it hasn't been completed?");
 			}
 
-			return Ok($"{remaining}/{remaining + done}");
+			return Ok($"{done}/{remaining + done}");
 		}
 	}
 }
