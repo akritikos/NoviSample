@@ -21,11 +21,6 @@ namespace NoviSample.Api
 	using Serilog.Exceptions.Core;
 	using Serilog.Exceptions.Destructurers;
 	using Serilog.Exceptions.SqlServer.Destructurers;
-	using Serilog.Filters;
-	using Serilog.Formatting;
-	using Serilog.Formatting.Compact;
-	using Serilog.Formatting.Json;
-	using Serilog.Sinks.SystemConsole.Themes;
 
 	public static class Program
 	{
@@ -40,7 +35,6 @@ namespace NoviSample.Api
 			try
 			{
 				var host = CreateHostBuilder(args).Build();
-				host.MigrateDatabase();
 
 				host.Run();
 			}
@@ -53,23 +47,6 @@ namespace NoviSample.Api
 			finally
 			{
 				Log.CloseAndFlush();
-			}
-		}
-
-		private static void MigrateDatabase(this IHost host)
-		{
-			using var scope = host.Services.CreateScope();
-
-			var services = scope.ServiceProvider;
-			var context = services.GetRequiredService<NovibetDbContext>();
-			var migrations = context.Database.GetPendingMigrations().ToList();
-
-			if (migrations.Any())
-			{
-				context.Database.Migrate();
-				Log.Information(
-					LogMessages.MigrationsApplied,
-					migrations.ToList());
 			}
 		}
 

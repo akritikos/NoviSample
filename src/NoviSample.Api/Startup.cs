@@ -4,7 +4,7 @@ namespace Kritikos.NoviSample.Api
 	using System.IO;
 	using System.Reflection;
 	using System.Runtime.Caching;
-
+	using Kritikos.NoviSample.HostedServices;
 	using Kritikos.NoviSample.Persistence;
 	using Kritikos.NoviSample.Services;
 	using Kritikos.NoviSample.Services.Contracts;
@@ -44,6 +44,7 @@ namespace Kritikos.NoviSample.Api
 
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddHostedService<MigrationService>();
 			services.AddDbContext<NovibetDbContext>(o =>
 			{
 				o.UseSqlServer(Configuration.GetConnectionString("Novibet"), options => options.EnableRetryOnFailure())

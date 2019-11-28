@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\NoviSample.HostedServices\NoviSample.HostedServices.csproj" />
     <ProjectReference Include="..\NoviSample.Persistence\NoviSample.Persistence.csproj" />
   </ItemGroup>
 
