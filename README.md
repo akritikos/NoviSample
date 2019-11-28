@@ -3,7 +3,7 @@
 Sample assigment for assessment, described in detail [here][assigment],
 
 - [X] Library
-- [ ] API
+- [X] API
 - [ ] Batch Job
 
 ## Library
