@@ -1,6 +1,7 @@
 namespace Kritikos.NoviSample.Services
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Net.Http;
 	using System.Threading.Tasks;
 
@@ -9,7 +10,7 @@ namespace Kritikos.NoviSample.Services
 
 	using Newtonsoft.Json;
 
-	public class HttpClientIpStackService : IIPInfoProvider
+	public class HttpClientIpStackService : IIpInfoProviderAsync
 	{
 		private const string BaseUri = "api.ipstack.com";
 		private static readonly HttpClient Client = new HttpClient();
@@ -42,15 +43,21 @@ namespace Kritikos.NoviSample.Services
 			// Bad Practice, but our interface demands IPDetails, not Task<IPDetails> so we can't go async
 			var result = Task.Run(() => Client.GetStringAsync($"{ip}?access_key={apikey}")).GetAwaiter().GetResult();
 			var details = JsonConvert.DeserializeObject<IpDetailResponse>(result);
-			details.Ip = ip;
 			return details;
 		}
 
-		public async Task<IPDetails> GetDetailsAsync(string ip)
+		public async Task<IpDetailResponse> GetDetailsAsync(string ip)
 		{
 			var result = await Client.GetStringAsync($"{ip}?access_key={apikey}");
 			var details = JsonConvert.DeserializeObject<IpDetailResponse>(result);
-			details.Ip = ip;
+			return details;
+		}
+
+		/// <inheritdoc />
+		public async Task<List<IpDetailResponse>> GetBulkDetailsAsync(string[] ipList)
+		{
+			var result = await Client.GetStringAsync($"{string.Join(",", ipList)}?access_key={apikey}");
+			var details = JsonConvert.DeserializeObject<List<IpDetailResponse>>(result);
 			return details;
 		}
 	}

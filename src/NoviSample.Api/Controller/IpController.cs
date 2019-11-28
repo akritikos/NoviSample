@@ -21,14 +21,11 @@ namespace Kritikos.NoviSample.Api.Controller
 	[Route("api/ip")]
 	public class IpController : Controller
 	{
-		private static readonly CacheItemPolicy SlidingPolicy =
-			new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(1) };
-
 		public IpController(
 			ILogger<IpController> logger,
 			NovibetDbContext dbContext,
 			MemoryCache cache,
-			IIPInfoProvider ipInfoProvider)
+			IIpInfoProviderAsync ipInfoProvider)
 		{
 			Logger = logger;
 			Context = dbContext;
@@ -36,11 +33,11 @@ namespace Kritikos.NoviSample.Api.Controller
 			IpInfoProvider = ipInfoProvider;
 		}
 
-		private IIPInfoProvider IpInfoProvider { get; }
+		private IIpInfoProviderAsync IpInfoProvider { get; }
 
 		private NovibetDbContext Context { get; }
 
-		public MemoryCache Cache { get; set; }
+		private MemoryCache Cache { get; set; }
 
 		private ILogger<IpController> Logger { get; }
 
@@ -89,18 +86,17 @@ namespace Kritikos.NoviSample.Api.Controller
 			var details = await Context.IpDetails.Where(x => x.Ip == address).FirstOrDefaultAsync();
 			if (details != null)
 			{
-				// Depending on needs, sliding expiration might be better for performance reasons,
-				// replace the date time in the call with the static SlidingPolicy field to achieve that
+				// Depending on needs, sliding expiration might be better for performance reasons
 				Cache.Add(address, details, DateTime.UtcNow.AddMinutes(1));
 				Logger.LogWarning(LogMessages.RequestedInfoForIpNoCache, address);
 				return Ok(details);
 			}
 
-			IpDetailResponse response;
+			IpDetails response;
 			try
 			{
 				var apiQuery = await IpInfoProvider.GetDetailsAsync(address);
-				response = ToIpDetailResponse(apiQuery, address);
+				response = Mapper.IpDetailResponseToEntity(apiQuery);
 			}
 			catch (JsonSerializationException e)
 			{
@@ -112,23 +108,11 @@ namespace Kritikos.NoviSample.Api.Controller
 			Context.IpDetails.Add(response);
 			await Context.SaveChangesAsync();
 
-			// Depending on needs, sliding expiration might be better for performance reasons,
-			// replace the date time in the call with the static SlidingPolicy field to achieve that
+			// Depending on needs, sliding expiration might be better for performance reasons
 			Cache.Add(address, response, DateTime.UtcNow.AddMinutes(1));
 			Logger.LogCritical(LogMessages.RequestedInfoForIpNoPersistence, address);
 
 			return Ok(response);
 		}
-
-		private static IpDetailResponse ToIpDetailResponse(IPDetails details, string ip)
-			=> new IpDetailResponse
-			{
-				City = details.City,
-				Continent = details.Continent,
-				Country = details.Country,
-				Latitude = details.Latitude,
-				Longitude = details.Longitude,
-				Ip = ip,
-			};
 	}
 }

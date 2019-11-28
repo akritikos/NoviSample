@@ -72,7 +72,7 @@ namespace Kritikos.NoviSample.Api
 				.SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
 			services.AddSingleton(MemoryCache.Default);
-			services.AddSingleton<IIPInfoProvider>(
+			services.AddSingleton<IIpInfoProviderAsync>(
 				new HttpClientIpStackService(Environment.GetEnvironmentVariable("IpStack:Api") ?? string.Empty));
 		}
 

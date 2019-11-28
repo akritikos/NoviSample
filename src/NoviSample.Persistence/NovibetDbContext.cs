@@ -17,7 +17,7 @@ namespace Kritikos.NoviSample.Persistence
 			: base(options)
 			=> loggerFactory = loggerfactory;
 
-		public DbSet<IpDetailResponse> IpDetails { get; private set; }
+		public DbSet<IpDetails> IpDetails { get; private set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{

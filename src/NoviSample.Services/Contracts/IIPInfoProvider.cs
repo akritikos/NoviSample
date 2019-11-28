@@ -7,7 +7,5 @@ namespace Kritikos.NoviSample.Services.Contracts
 	public interface IIPInfoProvider
 	{
 		IPDetails GetDetails(string ip);
-
-		Task<IPDetails> GetDetailsAsync(string ip) => Task.FromResult(GetDetails(ip));
 	}
 }
