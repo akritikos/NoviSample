@@ -3,9 +3,11 @@ namespace Kritikos.NoviSample.Api
 	using System;
 	using System.IO;
 	using System.Reflection;
+	using System.Runtime.Caching;
 
 	using Kritikos.NoviSample.Persistence;
-
+	using Kritikos.NoviSample.Services;
+	using Kritikos.NoviSample.Services.Contracts;
 	using Microsoft.AspNetCore.Builder;
 	using Microsoft.AspNetCore.Hosting;
 	using Microsoft.AspNetCore.Http;
@@ -28,24 +30,24 @@ namespace Kritikos.NoviSample.Api
 		static Startup()
 			=> LoggerFactory = new SerilogLoggerFactory(Log.Logger);
 
-		public Startup(IConfiguration configuration, IWebHostEnvironment environment)
+		public Startup(IConfiguration configuration, IWebHostEnvironment hostEnvironment)
 		{
 			Configuration = configuration;
-			Environment = environment;
+			HostEnvironment = hostEnvironment;
 		}
 
 		private static ILoggerFactory LoggerFactory { get; }
 
 		private IConfiguration Configuration { get; }
 
-		private IWebHostEnvironment Environment { get; }
+		private IWebHostEnvironment HostEnvironment { get; }
 
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddDbContext<NovibetDbContext>(o =>
 			{
 				o.UseSqlServer(Configuration.GetConnectionString("Novibet"), options => options.EnableRetryOnFailure())
-					.EnableSensitiveDataLogging(Environment.IsDevelopment())
+					.EnableSensitiveDataLogging(HostEnvironment.IsDevelopment())
 					.ConfigureWarnings(warnings =>
 					{
 						warnings.Ignore(CoreEventId.SensitiveDataLoggingEnabledWarning);
@@ -68,6 +70,10 @@ namespace Kritikos.NoviSample.Api
 			services.AddControllers()
 				.AddControllersAsServices()
 				.SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+
+			services.AddSingleton(MemoryCache.Default);
+			services.AddSingleton<IIPInfoProvider>(
+				new HttpClientIpStackService(Environment.GetEnvironmentVariable("IpStack:Api") ?? string.Empty));
 		}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -89,7 +95,7 @@ namespace Kritikos.NoviSample.Api
 				c.EnableValidator();
 				c.DocumentTitle = "Novibet API Documentation";
 
-				if (!Environment.IsDevelopment())
+				if (!HostEnvironment.IsDevelopment())
 				{
 					return;
 				}
