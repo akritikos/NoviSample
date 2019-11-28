@@ -2,6 +2,7 @@ namespace Kritikos.NoviSample.Persistence
 {
 	using System;
 	using System.Collections.Generic;
+	using System.ComponentModel.DataAnnotations;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Text;
 
@@ -14,6 +15,7 @@ namespace Kritikos.NoviSample.Persistence
 		public long Id { get; set; }
 
 #pragma warning disable CS8618 // Handled by database
+		[Timestamp]
 		public byte[] RowVersion { get; set; }
 #pragma warning restore CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
 

@@ -2,6 +2,7 @@ namespace Kritikos.NoviSample.Services
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Linq;
 	using System.Net.Http;
 	using System.Threading.Tasks;
 
@@ -56,12 +57,24 @@ namespace Kritikos.NoviSample.Services
 			return details;
 		}
 
-		/// <inheritdoc />
-		public async Task<List<IpDetailResponse>> GetBulkDetailsAsync(string[] ipList)
+		// Actual batching, does not work since we're on the free plan...
+		public async Task<List<IpDetailResponse>> BulkDetailsAsync(string[] ipList)
 		{
 			var result = await Client.GetStringAsync($"{string.Join(",", ipList)}?access_key={apikey}");
 			var details = JsonConvert.DeserializeObject<List<IpDetailResponse>>(result, SerializerSettings);
 			return details;
+		}
+
+		// Poor man's batching...
+		public async Task<List<IpDetailResponse>> GetBulkDetailsAsync(string[] ipList)
+		{
+			var result = new List<IpDetailResponse>();
+			foreach (var address in ipList)
+			{
+				result.Add(await GetDetailsAsync(address));
+			}
+
+			return result;
 		}
 	}
 }

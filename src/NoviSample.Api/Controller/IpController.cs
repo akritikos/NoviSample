@@ -1,12 +1,14 @@
 namespace Kritikos.NoviSample.Api.Controller
 {
 	using System;
+	using System.Globalization;
 	using System.Linq;
 	using System.Net;
 	using System.Runtime.Caching;
 	using System.Threading.Tasks;
 
 	using Kritikos.NoviSample.Api.Helpers;
+	using Kritikos.NoviSample.HostedServices.Contracts;
 	using Kritikos.NoviSample.Persistence;
 	using Kritikos.NoviSample.Services.Contracts;
 	using Kritikos.NoviSample.Services.Models;
@@ -25,11 +27,13 @@ namespace Kritikos.NoviSample.Api.Controller
 			ILogger<IpController> logger,
 			NovibetDbContext dbContext,
 			MemoryCache cache,
-			IIpInfoProviderAsync ipInfoProvider)
+			IIpInfoProviderAsync ipInfoProvider,
+			IInMemoryBackgroundIpQueue queue)
 		{
 			Logger = logger;
 			Context = dbContext;
 			Cache = cache;
+			Queue = queue;
 			IpInfoProvider = ipInfoProvider;
 		}
 
@@ -37,9 +41,11 @@ namespace Kritikos.NoviSample.Api.Controller
 
 		private NovibetDbContext Context { get; }
 
-		private MemoryCache Cache { get; set; }
+		private MemoryCache Cache { get; }
 
 		private ILogger<IpController> Logger { get; }
+
+		private IInMemoryBackgroundIpQueue Queue { get; }
 
 		/// <summary>
 		/// Removes an IP address from cache forcibly, simulating the passage of time.
@@ -113,6 +119,26 @@ namespace Kritikos.NoviSample.Api.Controller
 			Logger.LogCritical(LogMessages.RequestedInfoForIpNoPersistence, address);
 
 			return Ok(response);
+		}
+
+		[HttpPost("batch")]
+		public ActionResult BatchIpRequest(string[] addresses)
+		{
+			var jobId = Guid.NewGuid().ToString("D", CultureInfo.InvariantCulture);
+			Queue.QueueBackgroundWorkItem((jobId, addresses.ToList()));
+			return Ok(jobId);
+		}
+
+		[HttpGet("batch/{jobId}")]
+		public ActionResult BatchIpReport(string jobId)
+		{
+			var (remaining, done) = Queue.GetProgressOfBatch(jobId);
+			if (remaining == null || done == null)
+			{
+				return NotFound("No such job, are you sure it hasn't been completed?");
+			}
+
+			return Ok($"{remaining}/{remaining + done}");
 		}
 	}
 }

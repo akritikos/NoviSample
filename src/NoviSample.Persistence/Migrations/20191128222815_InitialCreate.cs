@@ -14,7 +14,7 @@ namespace Kritikos.NoviSample.Persistence.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    RowVersion = table.Column<byte[]>(nullable: false),
+                    RowVersion = table.Column<byte[]>(rowVersion: true, nullable: false),
                     Ip = table.Column<string>(nullable: false),
                     City = table.Column<string>(nullable: false),
                     Country = table.Column<string>(nullable: false),

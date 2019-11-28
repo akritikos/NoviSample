@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kritikos.NoviSample.Persistence.Migrations
 {
     [DbContext(typeof(NovibetDbContext))]
-    [Migration("20191128153335_InitialCreate")]
+    [Migration("20191128222815_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,8 +51,10 @@ namespace Kritikos.NoviSample.Persistence.Migrations
                         .HasColumnType("float");
 
                     b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
                         .IsRequired()
-                        .HasColumnType("varbinary(max)");
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.HasKey("Id");
 

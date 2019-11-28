@@ -17,20 +17,20 @@ namespace Kritikos.NoviSample.HostedServices
 
 	public class MigrationService : IHostedService
 	{
-		public MigrationService(ILogger<MigrationService> logger, IServiceProvider services)
+		public MigrationService(ILogger<MigrationService> logger, IServiceScopeFactory scopeFactory)
 		{
 			Logger = logger;
-			Services = services;
+			ScopeFactory = scopeFactory;
 		}
 
 		private ILogger<MigrationService> Logger { get; }
 
-		private IServiceProvider Services { get; }
+		private IServiceScopeFactory ScopeFactory { get; }
 
 		/// <inheritdoc />
 		public async Task StartAsync(CancellationToken cancellationToken)
 		{
-			using var scope = Services.CreateScope();
+			using var scope = ScopeFactory.CreateScope();
 			var context = scope.ServiceProvider.GetRequiredService<NovibetDbContext>();
 			var migrations = context.Database.GetPendingMigrations().ToList();
 			if (!migrations.Any())

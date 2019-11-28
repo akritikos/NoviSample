@@ -6,6 +6,8 @@ namespace Kritikos.NoviSample.Api
 	using System.Runtime.Caching;
 
 	using Kritikos.NoviSample.HostedServices;
+	using Kritikos.NoviSample.HostedServices.Contracts;
+	using Kritikos.NoviSample.HostedServices.Implementations;
 	using Kritikos.NoviSample.Persistence;
 	using Kritikos.NoviSample.Services;
 	using Kritikos.NoviSample.Services.Contracts;
@@ -77,6 +79,9 @@ namespace Kritikos.NoviSample.Api
 			services.AddSingleton(MemoryCache.Default);
 			services.AddSingleton<IIpInfoProviderAsync>(
 				new HttpClientIpStackService(Environment.GetEnvironmentVariable("IpStack:Api") ?? string.Empty));
+			services.AddSingleton<IInMemoryBackgroundIpQueue, InMemoryBackgroundIpQueue>();
+
+			services.AddHostedService<IpBatchingService>();
 		}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
