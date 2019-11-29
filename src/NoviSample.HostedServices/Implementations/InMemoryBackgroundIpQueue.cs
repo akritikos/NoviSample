@@ -22,14 +22,20 @@ namespace Kritikos.NoviSample.HostedServices.Implementations
 
 		public Task<List<(string Identifier, string address)>> DequeueAsync(CancellationToken cancellationToken)
 		{
-			var selectedItems = 0;
-			var toDequeue = QueuedItems.SelectMany(x => x.Value.Select(y =>
-				{
-					selectedItems++;
-					return (Identifier: x.Key, address: y, count: selectedItems);
-				}))
-				.TakeWhile(x => x.count <= 10)
-				.Select(x => (x.Identifier, x.address))
+			//var selectedItems = 0;
+			//var toDequeue = QueuedItems.SelectMany(x => x.Value.Select(y =>
+			//	{
+			//		selectedItems++;
+			//		return (Identifier: x.Key, address: y, count: selectedItems);
+			//	}))
+			//	.TakeWhile(x => x.count <= 10)
+			//	.Select(x => (x.Identifier, x.address))
+			//	.ToList();
+
+			var toDequeue = QueuedItems.SelectMany(x => x.Value.Select(y => (identifier: x.Key, address: y))
+					.Select((t, i) => (identifier: x.Key, address: t.address, count: i)))
+				.TakeWhile(x => x.count < 10)
+				.Select(x => (x.identifier, x.address))
 				.ToList();
 			return Task.FromResult(toDequeue);
 		}
